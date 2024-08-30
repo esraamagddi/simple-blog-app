@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,5 +42,32 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
+
+    public function verifyCode(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string',
+            'verification_code' => 'required|numeric|digits:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $user = User::where('phone', $request->phone)
+            ->where('verification_code', $request->verification_code)
+            ->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid verification code or phone number'], 404);
+        }
+
+        $user->is_verified = true;
+        $user->save();
+
+        return response()->json(['message' => 'Account verified successfully'], 200);
+    }
+
+    
 
 }
