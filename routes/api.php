@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,5 +20,10 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tags', TagController::class);
+});
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('posts/deleted', [PostController::class, 'deleted']);
+    Route::patch('posts/{id}/restore', [PostController::class, 'restore']);
+    Route::apiResource('posts', PostController::class);
 });
 
