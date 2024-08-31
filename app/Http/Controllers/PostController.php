@@ -147,8 +147,7 @@ class PostController extends Controller
         if (!$post) {
             return response()->json(['message' => 'Post not found'], 404);
         }
-        
-        $post->clearMediaCollection('cover_images');
+
         $post->delete();
 
         return response()->json(['message' => 'Post deleted successfully'], 200);
